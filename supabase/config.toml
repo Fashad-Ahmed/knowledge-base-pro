@@ -1,1 +1,16 @@
 project_id = "lgdxrrhahenmpmjbqrdb"
+
+[functions.notes-api]
+verify_jwt = true
+
+[functions.search-api]
+verify_jwt = true
+
+[functions.folders-api]
+verify_jwt = true
+
+[functions.tags-api]
+verify_jwt = true
+
+[functions.ai-assistant]
+verify_jwt = true
