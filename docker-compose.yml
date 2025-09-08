@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  # Frontend React Application
+  knowledge-base-frontend:
+    build: .
+    ports:
+      - "3000:80"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+    networks:
+      - knowledge-base
+
+  # Supabase Local Development Stack (Optional - for self-hosting)
+  # Uncomment below to run local Supabase instead of cloud
+  
+  # supabase-db:
+  #   image: supabase/postgres:15.1.0.147
+  #   ports:
+  #     - "5432:5432"
+  #   environment:
+  #     POSTGRES_PASSWORD: your-super-secret-jwt-token-with-at-least-32-characters-long
+  #     POSTGRES_DB: postgres
+  #   volumes:
+  #     - db-data:/var/lib/postgresql/data
+  #   networks:
+  #     - knowledge-base
+
+  # supabase-studio:
+  #   image: supabase/studio:20240729-ce42139
+  #   ports:
+  #     - "3001:3000"
+  #   environment:
+  #     SUPABASE_URL: http://supabase-kong:8000
+  #     SUPABASE_REST_URL: http://localhost:8000/rest/v1/
+  #     SUPABASE_ANON_KEY: your-anon-key
+  #     SUPABASE_SERVICE_KEY: your-service-key
+  #   networks:
+  #     - knowledge-base
+
+  # supabase-kong:
+  #   image: kong:2.8.1
+  #   ports:
+  #     - "8000:8000"
+  #     - "8443:8443"
+  #   environment:
+  #     KONG_DATABASE: "off"
+  #     KONG_DECLARATIVE_CONFIG: /var/lib/kong/kong.yml
+  #   volumes:
+  #     - ./supabase/kong.yml:/var/lib/kong/kong.yml:ro
+  #   networks:
+  #     - knowledge-base
+
+  # For SSL/HTTPS (Production)
+  # nginx-proxy:
+  #   image: nginxproxy/nginx-proxy
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - /var/run/docker.sock:/tmp/docker.sock:ro
+  #     - ./certs:/etc/nginx/certs:ro
+  #   networks:
+  #     - knowledge-base
+
+networks:
+  knowledge-base:
+    driver: bridge
+
+volumes:
+  db-data:
