@@ -30,9 +30,19 @@ export const useFolders = () => {
     queryFn: async () => {
       if (!user) throw new Error('User not authenticated');
       
-      const { data, error } = await supabase.functions.invoke('folders-api');
+      const response = await fetch(`https://lgdxrrhahenmpmjbqrdb.supabase.co/functions/v1/folders-api`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+          'Content-Type': 'application/json'
+        }
+      });
       
-      if (error) throw error;
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
       return data as Folder[];
     },
     enabled: !!user,
@@ -44,15 +54,20 @@ export const useCreateFolder = () => {
   
   return useMutation({
     mutationFn: async (folderData: CreateFolderData) => {
-      const { data, error } = await supabase.functions.invoke('folders-api', {
-        body: {
-          method: 'POST',
-          ...folderData,
+      const response = await fetch(`https://lgdxrrhahenmpmjbqrdb.supabase.co/functions/v1/folders-api`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+          'Content-Type': 'application/json'
         },
+        body: JSON.stringify(folderData)
       });
       
-      if (error) throw error;
-      return data;
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['folders'] });
@@ -69,16 +84,20 @@ export const useUpdateFolder = () => {
   
   return useMutation({
     mutationFn: async ({ id, ...folderData }: Partial<CreateFolderData> & { id: string }) => {
-      const { data, error } = await supabase.functions.invoke('folders-api', {
-        body: {
-          method: 'PUT',
-          folderId: id,
-          ...folderData,
+      const response = await fetch(`https://lgdxrrhahenmpmjbqrdb.supabase.co/functions/v1/folders-api/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+          'Content-Type': 'application/json'
         },
+        body: JSON.stringify(folderData)
       });
       
-      if (error) throw error;
-      return data;
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['folders'] });
@@ -95,15 +114,19 @@ export const useDeleteFolder = () => {
   
   return useMutation({
     mutationFn: async (id: string) => {
-      const { data, error } = await supabase.functions.invoke('folders-api', {
-        body: {
-          method: 'DELETE',
-          folderId: id,
-        },
+      const response = await fetch(`https://lgdxrrhahenmpmjbqrdb.supabase.co/functions/v1/folders-api/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+          'Content-Type': 'application/json'
+        }
       });
       
-      if (error) throw error;
-      return data;
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['folders'] });

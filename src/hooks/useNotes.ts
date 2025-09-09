@@ -48,12 +48,25 @@ export const useNotes = (filters?: {
     queryFn: async () => {
       if (!user) throw new Error('User not authenticated');
       
-      const { data, error } = await supabase.functions.invoke('notes-api', {
-        body: { filters },
+      const params = new URLSearchParams();
+      if (filters?.folder_id) params.append('folder_id', filters.folder_id);
+      if (filters?.tag) params.append('tag', filters.tag);
+      if (filters?.favorite !== undefined) params.append('favorite', String(filters.favorite));
+      if (filters?.archived !== undefined) params.append('archived', String(filters.archived));
+      
+      const response = await fetch(`https://lgdxrrhahenmpmjbqrdb.supabase.co/functions/v1/notes-api?${params}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+          'Content-Type': 'application/json'
+        }
       });
       
-      if (error) throw error;
-      return data as Note[];
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json() as Note[];
     },
     enabled: !!user,
   });
@@ -67,12 +80,19 @@ export const useNote = (id: string) => {
     queryFn: async () => {
       if (!user || !id) throw new Error('User not authenticated or no ID provided');
       
-      const { data, error } = await supabase.functions.invoke('notes-api', {
-        body: { noteId: id },
+      const response = await fetch(`https://lgdxrrhahenmpmjbqrdb.supabase.co/functions/v1/notes-api/${id}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+          'Content-Type': 'application/json'
+        }
       });
       
-      if (error) throw error;
-      return data as Note;
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json() as Note;
     },
     enabled: !!user && !!id,
   });
@@ -83,15 +103,20 @@ export const useCreateNote = () => {
   
   return useMutation({
     mutationFn: async (noteData: CreateNoteData) => {
-      const { data, error } = await supabase.functions.invoke('notes-api', {
-        body: {
-          method: 'POST',
-          ...noteData,
+      const response = await fetch(`https://lgdxrrhahenmpmjbqrdb.supabase.co/functions/v1/notes-api`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+          'Content-Type': 'application/json'
         },
+        body: JSON.stringify(noteData)
       });
       
-      if (error) throw error;
-      return data;
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notes'] });
@@ -108,16 +133,20 @@ export const useUpdateNote = () => {
   
   return useMutation({
     mutationFn: async ({ id, ...noteData }: UpdateNoteData & { id: string }) => {
-      const { data, error } = await supabase.functions.invoke('notes-api', {
-        body: {
-          method: 'PUT',
-          noteId: id,
-          ...noteData,
+      const response = await fetch(`https://lgdxrrhahenmpmjbqrdb.supabase.co/functions/v1/notes-api/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+          'Content-Type': 'application/json'
         },
+        body: JSON.stringify(noteData)
       });
       
-      if (error) throw error;
-      return data;
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notes'] });
@@ -135,15 +164,19 @@ export const useDeleteNote = () => {
   
   return useMutation({
     mutationFn: async (id: string) => {
-      const { data, error } = await supabase.functions.invoke('notes-api', {
-        body: {
-          method: 'DELETE',
-          noteId: id,
-        },
+      const response = await fetch(`https://lgdxrrhahenmpmjbqrdb.supabase.co/functions/v1/notes-api/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+          'Content-Type': 'application/json'
+        }
       });
       
-      if (error) throw error;
-      return data;
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notes'] });

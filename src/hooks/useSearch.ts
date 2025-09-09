@@ -19,12 +19,20 @@ export const useSearch = () => {
     mutationFn: async ({ query, filters }: { query: string; filters?: SearchFilters }) => {
       if (!user) throw new Error('User not authenticated');
       
-      const { data, error } = await supabase.functions.invoke('search-api', {
-        body: { query, filters },
+      const response = await fetch(`https://lgdxrrhahenmpmjbqrdb.supabase.co/functions/v1/search-api`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ query, filters })
       });
       
-      if (error) throw error;
-      return data as Note[];
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json() as Note[];
     },
     onMutate: () => {
       setIsSearching(true);
