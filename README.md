@@ -1,4 +1,4 @@
-# KnowledgeBase - Privacy-First Personal Knowledge Management
+# KnowledgeBase - Privacy First Personal Knowledge Management
 
 A production-grade, privacy-first, self-hosted personal knowledge management system built with modern web technologies. Store, organize, search, and manage your notes with AI-powered features while maintaining full control over your data.
 
