@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      data_export_requests: {
+        Row: {
+          created_at: string
+          expires_at: string | null
+          export_url: string | null
+          id: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string | null
+          export_url?: string | null
+          id?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string | null
+          export_url?: string | null
+          id?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       folders: {
         Row: {
           color: string | null
@@ -89,9 +116,11 @@ export type Database = {
         Row: {
           content: string | null
           created_at: string
+          encryption_key_id: string | null
           folder_id: string | null
           id: string
           is_archived: boolean | null
+          is_encrypted: boolean | null
           is_favorite: boolean | null
           tags: string[] | null
           title: string
@@ -101,9 +130,11 @@ export type Database = {
         Insert: {
           content?: string | null
           created_at?: string
+          encryption_key_id?: string | null
           folder_id?: string | null
           id?: string
           is_archived?: boolean | null
+          is_encrypted?: boolean | null
           is_favorite?: boolean | null
           tags?: string[] | null
           title: string
@@ -113,9 +144,11 @@ export type Database = {
         Update: {
           content?: string | null
           created_at?: string
+          encryption_key_id?: string | null
           folder_id?: string | null
           id?: string
           is_archived?: boolean | null
+          is_encrypted?: boolean | null
           is_favorite?: boolean | null
           tags?: string[] | null
           title?: string
@@ -138,6 +171,7 @@ export type Database = {
           created_at: string
           full_name: string | null
           id: string
+          privacy_settings: Json | null
           updated_at: string
           user_id: string
           username: string | null
@@ -147,6 +181,7 @@ export type Database = {
           created_at?: string
           full_name?: string | null
           id?: string
+          privacy_settings?: Json | null
           updated_at?: string
           user_id: string
           username?: string | null
@@ -156,6 +191,7 @@ export type Database = {
           created_at?: string
           full_name?: string | null
           id?: string
+          privacy_settings?: Json | null
           updated_at?: string
           user_id?: string
           username?: string | null

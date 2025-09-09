@@ -50,6 +50,33 @@ serve(async (req) => {
       });
     }
 
+    // Check if user has enabled AI features (privacy-first approach)
+    const { data: profile, error: profileError } = await supabaseClient
+      .from('profiles')
+      .select('privacy_settings')
+      .eq('user_id', user.id)
+      .single();
+
+    if (profileError) {
+      console.error('Error fetching user profile:', profileError);
+      return new Response(JSON.stringify({ error: 'User profile not found' }), {
+        status: 403,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Respect user's privacy settings - AI features must be explicitly enabled
+    const privacySettings = profile?.privacy_settings || {};
+    if (!privacySettings.ai_features_enabled) {
+      return new Response(JSON.stringify({ 
+        error: 'AI features are disabled in your privacy settings. Please enable them in Settings > Privacy to use AI assistance.',
+        code: 'AI_FEATURES_DISABLED'
+      }), {
+        status: 403,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     const { action, content, context = {} } = await req.json();
 
     let systemPrompt;
