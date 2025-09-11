@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, FileText, Folder, Tag, Settings, Plus, LogOut, User } from "lucide-react";
+import { Search, FileText, Folder, Tag, Settings, Plus, LogOut, User, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -230,7 +230,16 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
         </ScrollArea>
 
         {/* Footer */}
-        <div className="p-4 border-t border-sidebar-border">
+        <div className="p-4 border-t border-sidebar-border space-y-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full justify-start gap-2 text-sidebar-foreground hover:bg-sidebar-accent"
+            onClick={() => navigate('/privacy')}
+          >
+            <Shield className="w-4 h-4" />
+            Privacy & Security
+          </Button>
           <Button
             variant="ghost"
             size="sm"

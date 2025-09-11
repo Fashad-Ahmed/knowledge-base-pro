@@ -251,6 +251,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_data_export: {
+        Args: { user_uuid?: string }
+        Returns: Json
+      }
       search_notes: {
         Args: { search_query: string; user_uuid?: string }
         Returns: {
