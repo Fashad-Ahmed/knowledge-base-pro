@@ -7,9 +7,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { FileText } from 'lucide-react';
+import { PasswordResetForm } from './PasswordResetForm';
 
 export const AuthForm = () => {
   const [isSignUp, setIsSignUp] = useState(false);
+  const [showPasswordReset, setShowPasswordReset] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
@@ -31,7 +33,10 @@ export const AuthForm = () => {
     try {
       if (isSignUp) {
         await signUp(email, password, fullName);
-        toast({ title: "Account created!", description: "Please check your email to verify." });
+        toast({ 
+          title: "Account created!", 
+          description: "Please check your email to verify your account." 
+        });
       } else {
         await signIn(email, password);
         toast({ title: "Welcome back!" });
@@ -46,6 +51,17 @@ export const AuthForm = () => {
       setLoading(false);
     }
   };
+
+  if (showPasswordReset) {
+    return (
+      <>
+        <SEOHead {...seoConfigs.homepage} />
+        <div className="min-h-screen flex items-center justify-center bg-gradient-subtle p-4">
+          <PasswordResetForm onBack={() => setShowPasswordReset(false)} />
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
@@ -96,14 +112,27 @@ export const AuthForm = () => {
               <Button type="submit" className="w-full gradient-primary" disabled={!isFormValid || loading}>
                 {loading ? 'Processing...' : isSignUp ? 'Create Account' : 'Sign In'}
               </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                className="w-full"
-                onClick={() => setIsSignUp(!isSignUp)}
-              >
-                {isSignUp ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}
-              </Button>
+              <div className="space-y-2">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="w-full"
+                  onClick={() => setIsSignUp(!isSignUp)}
+                >
+                  {isSignUp ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}
+                </Button>
+                
+                {!isSignUp && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="w-full text-sm text-muted-foreground"
+                    onClick={() => setShowPasswordReset(true)}
+                  >
+                    Forgot your password?
+                  </Button>
+                )}
+              </div>
             </form>
           </CardContent>
         </Card>

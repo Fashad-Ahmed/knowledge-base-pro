@@ -17,3 +17,6 @@ verify_jwt = true
 
 [functions.create-data-export]
 verify_jwt = true
+
+[functions.send-verification-email]
+verify_jwt = true

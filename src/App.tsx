@@ -6,12 +6,17 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { ThemeProvider } from "next-themes";
+import { Suspense } from "react";
 import { AuthForm } from "@/components/auth/AuthForm";
+import { UpdatePasswordForm } from "@/components/auth/UpdatePasswordForm";
+import { ComponentLoader } from "@/components/performance/LazyComponents";
 import Index from "./pages/Index";
-import Editor from "./pages/Editor";
-import Privacy from "./pages/Privacy";
-import Settings from "./pages/Settings";
-import TermsOfService from "./pages/TermsOfService";
+import { 
+  LazyEditor, 
+  LazySettings, 
+  LazyPrivacy, 
+  LazyTermsOfService 
+} from "@/components/performance/LazyComponents";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -66,14 +71,27 @@ const AppContent = () => {
         } />
         <Route path="/editor/:id?" element={
           <ProtectedRoute>
-            <Editor />
+            <Suspense fallback={<ComponentLoader />}>
+              <LazyEditor />
+            </Suspense>
           </ProtectedRoute>
         } />
-        <Route path="/privacy" element={<Privacy />} />
-        <Route path="/terms" element={<TermsOfService />} />
+        <Route path="/reset-password" element={<UpdatePasswordForm />} />
+        <Route path="/privacy" element={
+          <Suspense fallback={<ComponentLoader />}>
+            <LazyPrivacy />
+          </Suspense>
+        } />
+        <Route path="/terms" element={
+          <Suspense fallback={<ComponentLoader />}>
+            <LazyTermsOfService />
+          </Suspense>
+        } />
         <Route path="/settings" element={
           <ProtectedRoute>
-            <Settings />
+            <Suspense fallback={<ComponentLoader />}>
+              <LazySettings />
+            </Suspense>
           </ProtectedRoute>
         } />
         <Route path="*" element={<NotFound />} />

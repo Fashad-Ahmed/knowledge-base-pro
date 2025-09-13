@@ -1,6 +1,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.57.2';
+import { rateLimit, getRateLimitHeaders } from '../_shared/rateLimit.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -30,6 +31,36 @@ serve(async (req) => {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
+    }
+
+    // Rate limiting - 100 requests per 15 minutes per user
+    const identifier = user.id;
+    const rateCheck = rateLimit(identifier, {
+      windowMs: 15 * 60 * 1000, // 15 minutes
+      maxRequests: 100,
+    });
+
+    const rateLimitHeaders = getRateLimitHeaders(
+      rateCheck.remaining,
+      rateCheck.resetTime,
+      100
+    );
+
+    if (!rateCheck.allowed) {
+      return new Response(
+        JSON.stringify({ 
+          error: 'Rate limit exceeded. Please try again later.',
+          resetTime: rateCheck.resetTime 
+        }),
+        {
+          status: 429,
+          headers: { 
+            ...corsHeaders, 
+            ...rateLimitHeaders,
+            'Content-Type': 'application/json' 
+          },
+        }
+      );
     }
 
     const url = new URL(req.url);
@@ -107,7 +138,11 @@ serve(async (req) => {
           }
 
           return new Response(JSON.stringify(notes), {
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            headers: { 
+              ...corsHeaders, 
+              ...rateLimitHeaders,
+              'Content-Type': 'application/json' 
+            },
           });
         }
 
@@ -139,7 +174,11 @@ serve(async (req) => {
 
         return new Response(JSON.stringify(newNote), {
           status: 201,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          headers: { 
+            ...corsHeaders, 
+            ...rateLimitHeaders,
+            'Content-Type': 'application/json' 
+          },
         });
 
       case 'PUT':
@@ -168,7 +207,11 @@ serve(async (req) => {
         }
 
         return new Response(JSON.stringify(updatedNote), {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          headers: { 
+            ...corsHeaders, 
+            ...rateLimitHeaders,
+            'Content-Type': 'application/json' 
+          },
         });
 
       case 'DELETE':
@@ -187,7 +230,11 @@ serve(async (req) => {
         }
 
         return new Response(JSON.stringify({ success: true }), {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          headers: { 
+            ...corsHeaders, 
+            ...rateLimitHeaders,
+            'Content-Type': 'application/json' 
+          },
         });
 
       default:
