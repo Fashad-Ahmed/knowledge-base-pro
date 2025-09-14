@@ -14,6 +14,83 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_chat_history: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          metadata: Json | null
+          role: string
+          session_id: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          role: string
+          session_id: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          role?: string
+          session_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      collaboration_sessions: {
+        Row: {
+          created_at: string
+          cursor_position: number | null
+          id: string
+          last_seen: string
+          note_id: string
+          selection_end: number | null
+          selection_start: number | null
+          session_data: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          cursor_position?: number | null
+          id?: string
+          last_seen?: string
+          note_id: string
+          selection_end?: number | null
+          selection_start?: number | null
+          session_data?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          cursor_position?: number | null
+          id?: string
+          last_seen?: string
+          note_id?: string
+          selection_end?: number | null
+          selection_start?: number | null
+          session_data?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collaboration_sessions_note_id_fkey"
+            columns: ["note_id"]
+            isOneToOne: false
+            referencedRelation: "notes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       data_export_requests: {
         Row: {
           created_at: string
@@ -164,6 +241,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      plugins: {
+        Row: {
+          code: string
+          description: string | null
+          enabled: boolean
+          id: string
+          installed_at: string
+          manifest: Json
+          name: string
+          updated_at: string
+          user_id: string
+          version: string
+        }
+        Insert: {
+          code: string
+          description?: string | null
+          enabled?: boolean
+          id?: string
+          installed_at?: string
+          manifest: Json
+          name: string
+          updated_at?: string
+          user_id: string
+          version?: string
+        }
+        Update: {
+          code?: string
+          description?: string | null
+          enabled?: boolean
+          id?: string
+          installed_at?: string
+          manifest?: Json
+          name?: string
+          updated_at?: string
+          user_id?: string
+          version?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
