@@ -249,14 +249,6 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
             <Settings className="w-4 h-4" />
             Settings
           </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="w-full justify-start gap-2 text-sidebar-foreground hover:bg-sidebar-accent"
-          >
-            <Settings className="w-4 h-4" />
-            Settings
-          </Button>
         </div>
       </div>
 

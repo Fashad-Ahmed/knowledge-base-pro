@@ -3,6 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { MainLayout } from "@/components/layout/MainLayout";
 import { WelcomeDashboard } from "@/components/knowledge/WelcomeDashboard";
 import { WelcomeFlow } from '@/components/onboarding/WelcomeFlow';
+import { AuthForm } from '@/components/auth/AuthForm';
 
 const Index = () => {
   const { user } = useAuth();
@@ -22,6 +23,18 @@ const Index = () => {
     localStorage.setItem('hasSeenWelcome', 'true');
     setShowWelcome(false);
   };
+
+  // Show auth form for unauthenticated users
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-secondary/20">
+        <div className="w-full max-w-md">
+          <AuthForm />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       {showWelcome && <WelcomeFlow onComplete={handleWelcomeComplete} />}
